@@ -1,4 +1,6 @@
 mod tuple_struct;
+mod rectangles;
+mod methods;
 
 struct User {
     active: bool,
@@ -48,6 +50,8 @@ fn main() {
 
 
     tuple_struct::run();
+    rectangles::run();
+    methods::run();
 }
 
 // THIS CAN  BE SIMPLIFIED

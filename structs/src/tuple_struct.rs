@@ -9,8 +9,8 @@ struct AlwaysEqual;
 
 struct NotOwnData {
     active: bool,
-    username: &str,
-    email: &str, // We need to use lifetimes here to ensure the references are valid
+    //username: &str,
+    //email: &str, // We need to use lifetimes here to ensure the references are valid
     sign_in_count: u64,
 }
 
