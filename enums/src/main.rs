@@ -31,7 +31,7 @@ impl Message  {
 }
 
 
-fn main () {
+fn main() {
     let home = IpAddr {
         kind: IpAddrKind::V4,
         address: String::from("127.0.0.1"),
@@ -49,6 +49,8 @@ fn main () {
     let m  = Message::Write(String::from("hello"));
     m.call();
 
+
+    match_pattern::run();
 
 }
 
