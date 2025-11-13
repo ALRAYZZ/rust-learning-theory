@@ -1,4 +1,5 @@
 mod option_enum;
+mod match_pattern;
 
 enum IpAddrKind {
     V4,
