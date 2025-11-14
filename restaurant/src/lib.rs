@@ -1,3 +1,4 @@
+mod front_of_house;
 use std::fmt::Result;
 use std::io::Result as IoResult; // using 'as' to create an alias for Result type from io module
 
@@ -35,21 +36,6 @@ mod back_of_house { //  so back of house is a child of the root module in this c
     fn cook_order() {}
 }
 
-mod front_of_house {
-   pub mod hosting {
-       pub fn add_to_waitlist() {} // we need to make the function public to access it outside the module
-
-        fn seat_at_table() {}
-    }
-
-    mod serving {
-        fn take_order() {}
-
-        fn serve_order() {}
-
-        fn take_payment() {}
-    }
-}
 
 
 use crate::front_of_house::hosting;
