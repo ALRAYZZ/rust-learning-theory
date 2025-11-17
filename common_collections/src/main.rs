@@ -1,3 +1,5 @@
+mod strings;
+
 fn main() {
     // VECTORS
     // Creating a new empty vector of integers
