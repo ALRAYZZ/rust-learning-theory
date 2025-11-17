@@ -24,6 +24,8 @@ fn main() {
     let mut v3 = vec![1, 2, 3, 4];
     // Using indexing to access the third element
     let third: &i32 = &v3[2]; // This creates an immutable reference to the third element
+    // This copies the value of the third element into a new variable because i32 implements the Copy trait
+    // It does not move or borrow the element so the v3 vector can still be used mutably later
     let third2: i32 = v3[2];
     // Even if the vector is defined as mutable,
     // if we have an immutable reference to one of its elements,
