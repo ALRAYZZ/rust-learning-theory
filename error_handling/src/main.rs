@@ -1,6 +1,8 @@
 // use $env:RUST_BACKTRACE=1 cargo run to enable backtrace
 // when using Windows powershell
 
+mod custom_type_for_validation;
+
 use std::fs::File;
 use std::io::ErrorKind;
 use std::io::{self, Read};
