@@ -43,3 +43,60 @@ fn largest<T: PartialOrd>(list: &[T]) -> &T {
     }
     largest
 }
+
+
+// In Struct definitions
+
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+struct Point2<T, U> {
+    x: T,
+    y: U,
+}
+
+fn make_point() {
+    // In this case we use same struct for integers as well as floats
+    let integer = Point { x: 5, y: 10 };
+    let float = Point { x: 1.0, y: 4.0 };
+    // This will throw an error because x and y are of different types
+    let mix = Point { x: 5, y: 4.0 };
+    let mix2 = Point2 { x: 5, y: 4.0 }; // Using 2 generic types
+
+    // Using the method defined below fn x()
+    let p = Point { x: 5, y: 10 };
+    println!("p.x = {}", p.x);
+}
+
+// In Enum definitions
+
+// The Option enum is defined with a generic type T
+enum Option<T> {
+    Some(T),
+    None,
+}
+
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+
+// In Method definitions
+
+// Reusing Point struct
+// Here we use the generic type T in the method definition
+// We need to do impl<T> to specify that we are implementing methods for Point<T>
+// and is a generic type not a concrete type
+impl<T> Point<T> {
+    fn x (&self) -> &T {
+        &self.x
+    }
+}
+// We can also implement methods for specific types that only the Point struct with that type can use
+impl Point<f32> {
+    fn distance_from_origin(&self) -> f32 {
+        (self.x.powi(2) + self.y.powi(2)).sqrt()
+    }
+}
