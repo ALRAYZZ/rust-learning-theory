@@ -73,3 +73,49 @@ fn longest_with_lifetime<'a>(x: &'a str, y: &'a str) -> &'a str {
         y
     }
 }
+
+// Lifetime annotations in structs
+
+// This annotation means that an instance of ImportantExcerpt
+// cannot outlive the reference it holds in its part field.
+struct ImportantExcerpt<'a> {
+    part: &'a str,
+}
+
+fn struct_test() {
+    let novel = String::from(
+        "Call me Ishmael. Some years ago..."
+    );
+
+    let first_sentence = novel
+        .split(".")
+        .next()
+        .expect("Could not find a '.'");
+
+    let i = ImportantExcerpt {
+        part: first_sentence,
+    };
+}
+
+// Here we have only one input lifetime parameter and
+// therefore the return type gets the same lifetime.
+impl <'a> ImportantExcerpt<'a> {
+    fn level(&self) -> i32 {
+        3
+    }
+}
+
+// Two input lifetimes and one output lifetime, using elision rules, gives both
+// inputs their own lifetimes, then because one parameter is self,
+// the return type gets the lifetime of self.
+impl <'a> ImportantExcerpt<'a> {
+    fn announce_and_return_part(&self, announcement: &str) -> &str {
+        println!("Attention please: {}", announcement);
+        self.part
+    }
+}
+
+//  Static Lifetimes
+// A reference with the 'static lifetime can live for the entire duration of the program.
+// All string literals have the 'static lifetime
+let s: &'static str = "I have a static lifetime.";
