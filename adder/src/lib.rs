@@ -1,8 +1,69 @@
+pub fn add_two(a: i32) -> i32 {
+    a + 2
+}
+
 #[cfg(test)]
 mod tests {
+    use super::*; // Import all items from the parent module
+
     #[test] // Indicates that this is a test function
-    fn it_works() {
+    fn exploration() {
         let result = 2 + 2;
         assert_eq!(result, 4); // Asserts that one is equal to the other
+    }
+
+    //#[test]
+    fn another() {
+        panic!("Make this test fail");
+    }
+
+    #[test]
+    fn larger_can_hold_smaller() {
+        let larger = Rectangle {
+            width: 8,
+            height: 7,
+        };
+        let smaller = Rectangle {
+            width: 5,
+            height: 1,
+        };
+
+        // Assert macro checks that the expression returns true
+        // assert (this is true) else fail
+        assert!(larger.can_hold(&smaller));
+    }
+
+    #[test]
+    fn smaller_cannot_hold_larger() {
+        let larger = Rectangle {
+            width: 8,
+            height: 7,
+        };
+        let smaller = Rectangle {
+            width: 5,
+            height: 1,
+        };
+
+        // Assert macro checks that the expression is true
+        // In this case we use ! to invert the boolean value
+        assert!(!smaller.can_hold(&larger));
+    }
+
+    #[test]
+    fn it_adds_two() {
+        // Assert that 4 == add_two(2) else fail
+        assert_eq!(4, add_two(2));
+    }
+}
+
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+impl Rectangle {
+    fn can_hold(&self, other: &Rectangle) -> bool {
+        self.width > other.width && self.height > other.height
     }
 }
