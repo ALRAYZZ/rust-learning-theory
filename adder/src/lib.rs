@@ -2,6 +2,30 @@ pub fn add_two(a: i32) -> i32 {
     a + 2
 }
 
+pub fn greeting(name: &str) -> String {
+    // This macro creates a formatted string
+    // so we can include the name in the greeting
+    format!("Hello {name}!")
+}
+
+pub struct Guess {
+    value: i32,
+}
+
+impl Guess {
+    pub fn new(value: i32) -> Guess {
+        if value < 1 || value > 100 {
+            panic!(
+                "Guess value must be between 1 and 100, got {}.",
+                value
+            );
+        }
+        Guess { value }
+    }
+}
+
+// This module is only compiled when running tests
+// Contains test functions that will run with `cargo test`
 #[cfg(test)]
 mod tests {
     use super::*; // Import all items from the parent module
@@ -53,6 +77,23 @@ mod tests {
     fn it_adds_two() {
         // Assert that 4 == add_two(2) else fail
         assert_eq!(4, add_two(2));
+    }
+
+    #[test]
+    fn greeting_contains_name() {
+        let result = greeting("Carol");
+        // We add a 2nd parameter to assert! to customize the failure message
+        assert!(
+            result.contains("Carol"),
+            "Greeting did not contain name, value was `{}`", result
+        );
+
+    }
+
+    #[test]
+    #[should_panic] // This test should panic to pass
+    fn greater_than_100() {
+        Guess::new(200);
     }
 }
 
