@@ -25,6 +25,7 @@ fn run() {
 }
 
 mod caputring_moving_ownership;
+mod iterators;
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 enum ShirtColor {
