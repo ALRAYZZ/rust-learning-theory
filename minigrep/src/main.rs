@@ -4,11 +4,9 @@ use std::process;
 use minigrep::Config;
 
 fn main() {
-    let args: Vec<String> = env::args().collect(); // we annotate the type because collect() is ambiguous
-
-    // Unwrap_or_else is a method that either unwraps the Result if it's Ok
-    // or calls the provided closure if it's Err
-    let config = Config::build(&args).unwrap_or_else(|err| {
+    // env::args() returns an iterator of the command line arguments so we can use
+    // it directly in the build function
+    let config = Config::build(env::args()).unwrap_or_else(|err| {
         eprintln!("Problem parsing arguments: {err}");
         process::exit(1);
     });

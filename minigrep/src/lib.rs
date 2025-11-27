@@ -26,14 +26,11 @@ mod tests {
 // We tell Rust that the data we return by search function, will live as long as
 // the data passed into the search function in the contents argument
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    let mut results = Vec::new();
-    for line in contents.lines() {
-        if line.contains(query) {
-            results.push(line)
-        }
-    }
-
-    results
+    // lines returns an iterator over the lines of the string
+    // filter is an iterator adaptor, it takes a closure and returns a new iterator
+    // with only the elements that satisfy the condition in the closure
+    // so we are saying if line contains query, keep it, else discard it
+    contents.lines().filter(|line| line.contains(query)).collect()
 }
 
 pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
@@ -61,13 +58,24 @@ impl Config {
     // is the common approach for simple error handling in Rust
     // means the string doesn't come from a variable or computed at runtime
     // its hardcoded into the program, specifically in this function
-    pub fn build(args: &[String]) -> Result<Config, &'static str> {
-        if args.len() < 3 {
-            return Err("not enough arguments");
-        }
-        // Create the fields for the Config struct based on arguments and ENV variable
-        let query = args[1].clone();
-        let file_path = args[2].clone();
+    // impl Iterator<Item = String> Means: any type that implements the Iterator trait with items of type String
+    // You don’t have to name the concrete type (like std::vec::IntoIter<String> or std::slice::Iter<String>)
+    pub fn build(mut args: impl Iterator<Item = String>) -> Result<Config, &'static str> {
+        args.next(); // skip the first argument which is the program name
+
+        // Here we are extracting the query and file_path from the args iterator
+        // If we don't get them, we return an Err value with a static string slice
+        // We are calling next on the iterator to get the next value
+        let query = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didn't get a query string"),
+        };
+
+        let file_path = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didn't get a file path"),
+        };
+
         let ignore_case = env::var("IGNORE_CASE").is_ok();
 
         Ok(Config { query, file_path, ignore_case })
