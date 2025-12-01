@@ -1,4 +1,5 @@
 mod smart_pointers_as_references;
+mod drop_trait;
 
 // by using the use statement on List we don't need to say List::Cons and List::Nil
 use crate::List::{Cons, Nil};
