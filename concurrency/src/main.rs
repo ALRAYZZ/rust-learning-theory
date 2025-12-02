@@ -1,5 +1,9 @@
+mod channel; // Import the channel module
+
 use std::thread;
 use std::time::Duration;
+
+
 
 fn main() {
     let handle = thread::spawn(|| {
@@ -22,6 +26,8 @@ fn main() {
     //handle.join().unwrap();
 
     move_closures_threads();
+
+    channel::run();
 }
 
 
