@@ -1,4 +1,6 @@
-mod channel; // Import the channel module
+mod channel;
+mod shared_state;
+// Import the channel module
 
 use std::thread;
 use std::time::Duration;
@@ -28,6 +30,7 @@ fn main() {
     move_closures_threads();
 
     channel::run();
+    shared_state::run();
 }
 
 

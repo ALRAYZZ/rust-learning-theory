@@ -2,6 +2,11 @@
 // mpsc = multiple producer, single consumer means that we can have multiple threads
 // sending data to the same channel, but only one thread receiving data from it.
 
+// The main difference between using channels and just using the move keyword to transfer
+// ownership of data to a new thread is that with channels we can send multiple values
+// over time, while with move we can only transfer ownership once when the thread is created.
+// Also allows us to use many producers sending data to the same channel.
+
 
 use std::sync::mpsc;
 use std::thread;
