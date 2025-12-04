@@ -1,4 +1,5 @@
 mod refutability;
+mod pattern_syntax;
 
 fn main() {
 }
