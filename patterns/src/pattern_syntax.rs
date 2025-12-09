@@ -87,6 +87,8 @@ fn destructuring_enums() {
         ChangeColor(i32, i32, i32),
     }
 
+    // Here we would assign to msg an input value of type Message.
+    // So then use the match expression on our msg variable.
     let msg = Message::ChangeColor(0, 160, 255);
 
     match msg {
