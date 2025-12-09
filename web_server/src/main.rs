@@ -9,11 +9,13 @@ use web_server::ThreadPool;
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
-    let pool = ThreadPool::new(4);
+    let pool = ThreadPool::new(4); // Creates 4 worker threads ready to handle conns
 
+    // Infinite loop accepting incoming TCP connections
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 
+        // Instead of spawning a new thread per connection, reuse existing workers
         pool.execute(|| {
             handle_connection(stream);
         });
@@ -22,15 +24,18 @@ fn main() {
 
 fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&mut stream);
+    // Read only the first line (HTTP request line: "GET / HTTP/1.1")
     let request_line = buf_reader
         .lines()
         .next()
         .unwrap()
         .unwrap();
 
+    // Pattern matching on request to determine response
     let (status_line, filename) = match &request_line[..] {
         "GET / HTTP/1.1" => ("HTTP/1.1 200 OK", "hello.html"),
         "GET /sleep HTTP/1.1" => {
+            // Simulates slow request - threadpool prevents this from blocking other connections
             thread::sleep(Duration::from_secs(5));
             ("HTTP/1.1 200 OK", "hello.html")
         }
@@ -40,6 +45,7 @@ fn handle_connection(mut stream: TcpStream) {
     let contents = fs::read_to_string(filename).unwrap();
     let length = contents.len();
 
+    // Construct HTTP response with headers and body
     let response = format!(
         "{status_line}\r\n\
         Content-Length: {length}\r\n\r\n\
