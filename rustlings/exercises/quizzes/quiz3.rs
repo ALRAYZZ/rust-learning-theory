@@ -12,14 +12,19 @@
 // block to support alphabetical report cards in addition to numerical ones.
 
 // TODO: Adjust the struct as described above.
-struct ReportCard {
-    grade: f32,
+
+use std::fmt::Display;
+struct ReportCard<T> {
+    grade: T,
     student_name: String,
     student_age: u8,
 }
 
 // TODO: Adjust the impl block as described above.
-impl ReportCard {
+// Since we using generic types and we using the format macro, the macro forces us
+// to be sure that the data type we pass implements the Display trait.
+// So in our impl block we specify that type T: implements Display trait.
+impl<T: Display> ReportCard<T> {
     fn print(&self) -> String {
         format!(
             "{} ({}) - achieved a grade of {}",

@@ -1,9 +1,11 @@
 // Lifetimes are also needed when structs hold references.
 
 // TODO: Fix the compiler errors about the struct.
-struct Book {
-    author: &str,
-    title: &str,
+// This lifetime annotations means that Book struct instance will be valid
+// as long as both 'a references are valid.
+struct Book<'a> {
+    author: &'a str,
+    title: &'a str,
 }
 
 fn main() {
