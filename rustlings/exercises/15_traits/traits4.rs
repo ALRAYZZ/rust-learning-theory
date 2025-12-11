@@ -11,7 +11,12 @@ impl Licensed for SomeSoftware {}
 impl Licensed for OtherSoftware {}
 
 // TODO: Fix the compiler error by only changing the signature of this function.
-fn compare_license_types(software1: ???, software2: ???) -> bool {
+// We need to use trait bounds to ensure that both parameters implement the Licensed trait.
+// And to solve the unknown size issue, we can use generics,
+// so that the compiler knows the exact types at compile time.
+// Compiler generates concrete implementations for each type used. And when the different
+// types are passed, Rust can see their sizes and handle them correctly.
+fn compare_license_types<T: Licensed, U: Licensed>(software1: T, software2: U) -> bool {
     software1.licensing_info() == software2.licensing_info()
 }
 

@@ -3,8 +3,14 @@ trait Licensed {
     // implementors like the two structs below can share that default behavior
     // without repeating the function.
     // The default license information should be the string "Default license".
-    fn licensing_info(&self) -> String;
+    // When providing implementation in the trait definition, we are doing default method implementation.
+    // meaning any type that supports the implementation of the trait can use the default method
+    // without needing to provide its own implementation.
+    fn licensing_info(&self) -> String {
+        "Default license".to_string()
+    }
 }
+
 
 struct SomeSoftware {
     version_number: i32,
