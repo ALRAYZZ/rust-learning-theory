@@ -26,8 +26,10 @@ fn count_for(map: &HashMap<String, Progress>, value: Progress) -> usize {
 // TODO: Implement the functionality of `count_for` but with an iterator instead
 // of a `for` loop.
 fn count_iterator(map: &HashMap<String, Progress>, value: Progress) -> usize {
-    // `map` is a hash map with `String` keys and `Progress` values.
-    // map = { "variables1": Complete, "from_str": None, … }
+
+    // For each value &v in the hash map, we want to check if *v == value
+    // Then once all the values that match have been found, we want to count them.
+    map.values().filter(|&v| *v == value).count()
 }
 
 fn count_collection_for(collection: &[HashMap<String, Progress>], value: Progress) -> usize {
@@ -45,9 +47,14 @@ fn count_collection_for(collection: &[HashMap<String, Progress>], value: Progres
 // TODO: Implement the functionality of `count_collection_for` but with an
 // iterator instead of a `for` loop.
 fn count_collection_iterator(collection: &[HashMap<String, Progress>], value: Progress) -> usize {
-    // `collection` is a slice of hash maps.
-    // collection = [{ "variables1": Complete, "from_str": None, … },
-    //               { "variables2": Complete, … }, … ]
+    // Here the flat_map iterator is useful to flatten the nested structure of
+    // the collection of hash maps into a single iterator over all values.
+    // So then we can use the previous approach of filtering and counting.
+    // Basically flat_map converts all hash maps into a single hash map
+    collection.iter()
+        .flat_map(|map| map.values())
+        .filter(|&v| *v == value)
+        .count()
 }
 
 fn main() {
