@@ -14,9 +14,20 @@ impl Queue {
     }
 }
 
+// MPSC is a way to send data between threads in a concurrent program.
+// MPSC stands for Multiple Producer, Single Consumer.
+// Single thread can receive data, while multiple threads can send data.
+// Is the standard Rust solution for safe, asynchronous inter-thread communication.
+// Solves data races and mutability issues by enforcing ownership rules at compile time.
 fn send_tx(q: Queue, tx: mpsc::Sender<u32>) {
     // TODO: We want to send `tx` to both threads. But currently, it is moved
-    // into the first thread. How could you solve this problem?
+
+    //Clone the Sender BEFORE the original `tx` is moved into the first closure.
+    // This creates a second, independent handle for the same channel.
+    // So both threads can send messages concurrently.
+    let tx_clone = tx.clone();
+
+    // Thread 1: Takes ownership of the ORIGINAL `tx` handle and the first half of the queue.
     thread::spawn(move || {
         for val in q.first_half {
             println!("Sending {val:?}");
@@ -24,14 +35,17 @@ fn send_tx(q: Queue, tx: mpsc::Sender<u32>) {
             thread::sleep(Duration::from_millis(250));
         }
     });
-
+    // Thread 2: Takes ownership of the CLONED `tx` handle and the second half of the queue.
     thread::spawn(move || {
         for val in q.second_half {
             println!("Sending {val:?}");
-            tx.send(val).unwrap();
+            tx_clone.send(val).unwrap();
             thread::sleep(Duration::from_millis(250));
         }
     });
+    // All this is the right pattern for MPSC in Rust.
+    // In this case we create 2 threads producing data concurrently,
+    // while the main thread consumes that data.
 }
 
 fn main() {

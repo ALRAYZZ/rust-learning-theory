@@ -2,7 +2,7 @@
 // work. But this time, the spawned threads need to be in charge of updating a
 // shared value: `JobStatus.jobs_done`
 
-use std::{sync::Arc, thread, time::Duration};
+use std::{sync::{Arc, Mutex}, thread, time::Duration};
 
 struct JobStatus {
     jobs_done: u32,
@@ -10,7 +10,9 @@ struct JobStatus {
 
 fn main() {
     // TODO: `Arc` isn't enough if you want a **mutable** shared state.
-    let status = Arc::new(JobStatus { jobs_done: 0 });
+    // To achieve mutable shared state across multiple threads, we need to combine
+    // the sharing capabilities of Arc and a thread-safe way to manage mutable data.
+    let status = Arc::new(Mutex::new(JobStatus { jobs_done: 0 }));
 
     let mut handles = Vec::new();
     for _ in 0..10 {
@@ -19,6 +21,11 @@ fn main() {
             thread::sleep(Duration::from_millis(250));
 
             // TODO: You must take an action before you update a shared value.
+
+            // Here we have to lock the mutex before we can safely read/write the shared data.
+            // So we make sure that ONLY the specific thread that has acquired the lock
+            // can modify the data.
+            let mut status_shared = status_shared.lock().unwrap();
             status_shared.jobs_done += 1;
         });
         handles.push(handle);
@@ -30,5 +37,7 @@ fn main() {
     }
 
     // TODO: Print the value of `JobStatus.jobs_done`.
-    println!("Jobs done: {}", todo!());
+    // Again, we need to lock the mutex to safely access the shared data.
+    // So once whe have a mutex on a data. That data can only be accessed by the thread that has the lock.
+    println!("Jobs done: {}", status.lock().unwrap().jobs_done);
 }
