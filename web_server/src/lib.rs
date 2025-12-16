@@ -6,7 +6,7 @@ use std::{
 // ThreadPool manages a fixed number of worker threads that share work from a queue
 pub struct ThreadPool{
     workers: Vec<Worker>,
-    sender: mpsc::Sender<Job>, // Sending end of channel to dispatch jobs to workers
+    sender: Option<mpsc::Sender<Job>>, // Sending end of channel to dispatch jobs to workers
 }
 
 // Job is a closure that can be executed once, sent across threads, and has a static lifetime
@@ -37,7 +37,10 @@ impl ThreadPool {
             workers.push(Worker::new(id, Arc::clone(&receiver)));
         }
 
-        ThreadPool { workers, sender }
+        ThreadPool {
+            workers,
+            sender: Some(sender)
+        }
     }
 
     pub fn execute<F>(&self, f: F)
@@ -46,31 +49,52 @@ impl ThreadPool {
     {
         let job = Box::new(f); // Box allocates closure on heap (required for trait objects)
 
-        self.sender.send(job).unwrap(); // Send job to channel, any available worker will pick it up
+        self.sender
+            .as_ref()
+            .unwrap()
+            .send(job)
+            .unwrap()
+    }
+}
+
+impl Drop for ThreadPool {
+    fn drop(&mut self) {
+        drop(self.sender.take()); // Close the sending end to signal workers to stop
+        for worker in &mut self.workers {
+            println!("Shutting down worker {}", worker.id);
+            // Gracefully terminate each worker thread
+            if let Some(thread) = worker.thread.take() {
+                thread.join().unwrap();
+            }
+        }
     }
 }
 
 struct Worker {
     id: usize,
-    thread: thread::JoinHandle<()>,
+    thread: Option<thread::JoinHandle<()>>,
 }
 
 impl Worker {
     fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Job>>>) -> Worker {
         let thread = thread::spawn(move || loop {
-            // lock() acquires mutex, recv() blocks until a job arrives
-            // This pattern ensures only one worker processes each job
-            let job = receiver
-                .lock()
-                .unwrap()
-                .recv()
-                .unwrap();
+            let message = receiver.lock().unwrap().recv();
 
-            println!("Worker {id} got a job; executing.");
-
-            job(); // Execute the closure
+            match message {
+                Ok(job) => {
+                    println!("Worker {id} got a job; executing.");
+                    job();
+                }
+                Err(_) => {
+                    println!("Worker {id} disconnected; shutting down.");
+                    break;
+                }
+            }
         });
 
-        Worker {id, thread}
+        Worker {
+            id,
+            thread: Some(thread),
+        }
     }
 }

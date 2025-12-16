@@ -12,13 +12,15 @@ fn main() {
     let pool = ThreadPool::new(4); // Creates 4 worker threads ready to handle conns
 
     // Infinite loop accepting incoming TCP connections
-    for stream in listener.incoming() {
+    for stream in listener.incoming().take(2) {
         let stream = stream.unwrap();
 
         // Instead of spawning a new thread per connection, reuse existing workers
         pool.execute(|| {
             handle_connection(stream);
         });
+
+        println!("Connection closed.");
     }
 }
 
